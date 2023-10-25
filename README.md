@@ -2,7 +2,13 @@
 
 This project is a CLI tool written in Rust to download and/or sort the HIBP password hashes from Cloudflare.
 
-## Installation
+## Download (trust GitHub to compile it for you)
+
+For those who don't want to install Rust or compile themselves, Github CI automatically builds the binaries and
+checksum files and uploads them under each release in the releases section.
+([You can view the releases here.](https://github.com/junderw/hibp_downloader/releases))
+
+## Installation (compile it yourself)
 
 This requires Rust to install. [Installing `rustup` is the easiest way.](https://www.rust-lang.org/tools/install)
 
