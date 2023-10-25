@@ -1,8 +1,22 @@
 [package]
 name = "hibp_downloader"
-version = "0.1.0"
+version = "1.0.0"
+license = "MIT"
+authors = [
+    "Jonathan Underwood <jonathan.underwood4649@gmail.com>"
+]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A CLI app for downloading and/or sorting HaveIBeenPwned password hashes."
 
 [dependencies]
+anyhow = "1.0.75"
+byteorder = "1.5.0"
+clap = { version = "4.4.7", features = ["derive"] }
+extsort = "0.4.2"
+indicatif = "0.17.7"
+reqwest = "0.11.22"
+tokio = { version = "1", features = ["fs", "io-util", "rt-multi-thread"] }
+tracing = "0.1.40"
+tracing-indicatif = "0.3.5"
+tracing-log = "0.1.4"
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
