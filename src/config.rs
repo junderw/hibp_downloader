@@ -12,7 +12,7 @@ pub struct Config {
     #[arg(long, default_value_t = default_workers())]
     pub workers: usize,
     /// The number of requests per worker
-    #[arg(long, default_value = "20")]
+    #[arg(long, default_value_t = default_multiplier())]
     pub multiplier: usize,
     /// Download NTLM hashes instead of SHA1 hashes
     #[arg(short, long)]
@@ -67,6 +67,12 @@ fn default_workers() -> usize {
     std::thread::available_parallelism()
         .expect("Couldn't get CPU count")
         .get()
+}
+
+fn default_multiplier() -> usize {
+    // Cloudflare seems to throttle at 128 in-flight connections at a time
+    // (Note: available_parallelism is guaranteed to be non-zero)
+    128 / default_workers()
 }
 
 /// This function gives a static reference to a Config struct.

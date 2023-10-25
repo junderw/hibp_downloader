@@ -37,8 +37,8 @@ pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<
         assert!(len == 32 || len == 40);
         len
     };
-    // colon + average of 3 length number (max 8, min 1) + new line
-    let row_size = hash_size + 5;
+    // colon + average of 5 length number (max 8, min 1) + new line
+    let row_size = hash_size + 7;
     let rows_in_file = input_byte_size / row_size as u64;
 
     // This is a rough estimate.

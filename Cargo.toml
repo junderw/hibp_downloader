@@ -1,6 +1,6 @@
 [package]
 name = "hibp_downloader"
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 authors = [
     "Jonathan Underwood <jonathan.underwood4649@gmail.com>"
