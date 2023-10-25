@@ -37,6 +37,7 @@ pub fn init_client_channels(
 ) -> (Client, Sender<ChannelData>, Receiver<ChannelData>) {
     let client = reqwest::Client::builder()
         .user_agent(USER_AGENT)
+        .timeout(std::time::Duration::from_secs(5))
         .build()
         .unwrap();
     let (tx, rx) = tokio::sync::mpsc::channel::<ChannelData>(concurrent_requests);
