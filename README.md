@@ -42,7 +42,7 @@ Commands:
 
 Options:
       --workers <WORKERS>          The number of workers to use for requests [default: NUM_CPU]
-      --multiplier <MULTIPLIER>    The number of requests per worker [default: 20]
+      --multiplier <MULTIPLIER>    The number of requests per worker [default: 128/NUM_CPU]
   -n, --ntlm                       Download NTLM hashes instead of SHA1 hashes
       --output-file <OUTPUT_FILE>  The file where the output will be written.
                                    This file will be sorted by hash. [default: ./hibp_password_hashes.txt]
