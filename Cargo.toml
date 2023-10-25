@@ -1,6 +1,6 @@
 [package]
 name = "hibp_downloader"
-version = "1.0.0"
+version = "1.0.1"
 license = "MIT"
 authors = [
     "Jonathan Underwood <jonathan.underwood4649@gmail.com>"
@@ -14,7 +14,7 @@ byteorder = "1.5.0"
 clap = { version = "4.4.7", features = ["derive"] }
 extsort = "0.4.2"
 indicatif = "0.17.7"
-reqwest = "0.11.22"
+reqwest = { version = "0.11.22", default-features = false, features = ["rustls-tls"] }
 tokio = { version = "1", features = ["fs", "io-util", "rt-multi-thread"] }
 tracing = "0.1.40"
 tracing-indicatif = "0.3.5"
