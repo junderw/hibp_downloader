@@ -23,6 +23,12 @@ $ cargo build --release
 
 ## Usage
 
+Note: `--workers` should probably stay default, as it decides the number of worker threads for tokio's
+async runtime, but if you start getting "refused stream before processing any application logic" errors,
+lower the `--multiplier` option from its default.
+
+`workers * multiplier` is how it decides the number of concurrent downloads.
+
 Without subcommand:
 
 ```
@@ -35,7 +41,7 @@ Commands:
   help  Print this message or the help of the given subcommand(s)
 
 Options:
-      --workers <WORKERS>          The number of workers to use for requests [default: 8]
+      --workers <WORKERS>          The number of workers to use for requests [default: NUM_CPU]
       --multiplier <MULTIPLIER>    The number of requests per worker [default: 20]
   -n, --ntlm                       Download NTLM hashes instead of SHA1 hashes
       --output-file <OUTPUT_FILE>  The file where the output will be written.
