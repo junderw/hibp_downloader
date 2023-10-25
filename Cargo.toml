@@ -6,6 +6,9 @@ authors = [
     "Jonathan Underwood <jonathan.underwood4649@gmail.com>"
 ]
 edition = "2021"
+homepage = "https://github.com/junderw/hibp_downloader"
+repository = "https://github.com/junderw/hibp_downloader"
+documentation = "https://docs.rs/hibp_downloader"
 description = "A CLI app for downloading and/or sorting HaveIBeenPwned password hashes."
 
 [dependencies]
