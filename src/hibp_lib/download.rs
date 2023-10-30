@@ -5,13 +5,14 @@ use tracing::info;
 use super::{
     consts::HIBP_ROOT,
     stats::{AVG_TIME_MS, CACHE_HITS, DOWNLOADED, IN_ROUTE},
+    ChannelData,
 };
 
 pub async fn download_prefix(
     client: &reqwest::Client,
     n: u32,
     ntlm: bool,
-) -> anyhow::Result<(u32, String)> {
+) -> anyhow::Result<ChannelData> {
     let n_str = format!("{n:05X}");
     let ntlm_str = if ntlm { "?mode=ntlm" } else { "" };
     let url = format!("{HIBP_ROOT}{n_str}{ntlm_str}");
@@ -74,10 +75,5 @@ pub async fn download_prefix(
         CACHE_HITS.fetch_add(1, atomic::Ordering::AcqRel);
     }
 
-    let new_lines: String = String::from_utf8_lossy(&res_bytes)
-        .lines()
-        .map(|s| format!("{n_str}{s}\n"))
-        .collect();
-
-    Ok((n, new_lines))
+    Ok((n, res_bytes))
 }

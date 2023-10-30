@@ -7,6 +7,7 @@ mod sort;
 mod stats;
 mod tasks;
 
+use bytes::Bytes;
 use config::Config;
 use consts::{LENGTH, USER_AGENT};
 use progress_style::{get_span, progress_style_download};
@@ -31,7 +32,7 @@ pub fn init_logging_and_progress() {
     LogTracer::init().unwrap();
 }
 
-pub type ChannelData = (u32, String);
+pub type ChannelData = (u32, Bytes);
 pub fn init_client_channels(
     concurrent_requests: usize,
 ) -> (Client, Sender<ChannelData>, Receiver<ChannelData>) {

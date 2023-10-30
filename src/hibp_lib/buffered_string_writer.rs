@@ -1,10 +1,10 @@
 use std::{collections::VecDeque, path::Path, sync::atomic};
 use tokio::io::AsyncWriteExt;
 
-use super::stats::WRITTEN_TO_FILE;
+use super::{stats::WRITTEN_TO_FILE, ChannelData};
 
 pub struct BufferedStringWriter {
-    files: VecDeque<(u32, String)>,
+    files: VecDeque<ChannelData>,
     writer: tokio::io::BufWriter<tokio::fs::File>,
 }
 
@@ -19,7 +19,7 @@ impl BufferedStringWriter {
         })
     }
 
-    pub async fn add_file(&mut self, (n, content): (u32, String)) -> Result<(), std::io::Error> {
+    pub async fn add_file(&mut self, (n, content): ChannelData) -> Result<(), std::io::Error> {
         self.files.push_back((n, content));
         if self.files.len() < 1024 {
             return Ok(());
@@ -47,8 +47,12 @@ impl BufferedStringWriter {
                     break;
                 }
             }
-            let (_, text) = self.files.pop_front().unwrap();
-            self.writer.write_all(text.as_bytes()).await?;
+            let (n, text) = self.files.pop_front().unwrap();
+            for line in String::from_utf8_lossy(&text).lines() {
+                self.writer
+                    .write_all(format!("{n:05X}{line}\n").as_bytes())
+                    .await?;
+            }
             WRITTEN_TO_FILE.fetch_add(1, atomic::Ordering::AcqRel);
         }
 

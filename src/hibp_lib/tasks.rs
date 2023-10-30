@@ -17,10 +17,11 @@ use super::{
     consts::{BEGIN, END},
     download::download_prefix,
     stats::DOWNLOADED,
+    ChannelData,
 };
 
 pub async fn writer_task(
-    mut rx: Receiver<(u32, String)>,
+    mut rx: Receiver<ChannelData>,
     output_file: PathBuf,
 ) -> Result<(), io::Error> {
     let mut file = BufferedStringWriter::from_file(&output_file).await?;
@@ -45,7 +46,7 @@ pub async fn progress_task() {
 pub async fn download_task(
     client: reqwest::Client,
     concurrent_requests: usize,
-    tx: Sender<(u32, String)>,
+    tx: Sender<ChannelData>,
     ntlm: bool,
 ) -> anyhow::Result<()> {
     let mut handles = JoinSet::new();
