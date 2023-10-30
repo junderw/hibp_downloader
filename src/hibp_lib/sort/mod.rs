@@ -8,7 +8,7 @@ use tracing_indicatif::span_ext::IndicatifSpanExt;
 mod row;
 use row::MyStruct;
 
-use crate::progress_style::{get_span, progress_style_sort};
+use super::progress_style::{get_span, progress_style_sort};
 
 pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<()> {
     // Create the dir if it doesn't exist

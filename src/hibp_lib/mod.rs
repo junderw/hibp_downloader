@@ -1,3 +1,12 @@
+mod buffered_string_writer;
+pub mod config;
+mod consts;
+mod download;
+mod progress_style;
+mod sort;
+mod stats;
+mod tasks;
+
 use config::Config;
 use consts::{LENGTH, USER_AGENT};
 use progress_style::{get_span, progress_style_download};
@@ -8,15 +17,6 @@ use tracing::Instrument;
 use tracing_indicatif::IndicatifLayer;
 use tracing_log::LogTracer;
 use tracing_subscriber::{layer::SubscriberExt, EnvFilter, FmtSubscriber};
-
-mod buffered_string_writer;
-pub mod config;
-mod consts;
-mod download;
-mod progress_style;
-mod sort;
-mod stats;
-mod tasks;
 
 pub fn init_logging_and_progress() {
     let indicatif_layer = IndicatifLayer::new();

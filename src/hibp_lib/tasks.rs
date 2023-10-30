@@ -12,7 +12,7 @@ use tokio::{
 use tracing::Span;
 use tracing_indicatif::span_ext::IndicatifSpanExt;
 
-use crate::{
+use super::{
     buffered_string_writer::BufferedStringWriter,
     consts::{BEGIN, END},
     download::download_prefix,

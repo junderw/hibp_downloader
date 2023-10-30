@@ -1,4 +1,5 @@
-use hibp_downloader::{
+mod hibp_lib;
+use hibp_lib::{
     config::{get_config, Commands},
     init_logging_and_progress, run_download, run_sort,
 };

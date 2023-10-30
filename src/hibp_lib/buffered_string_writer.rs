@@ -1,7 +1,7 @@
 use std::{collections::VecDeque, path::Path, sync::atomic};
 use tokio::io::AsyncWriteExt;
 
-use crate::stats::WRITTEN_TO_FILE;
+use super::stats::WRITTEN_TO_FILE;
 
 pub struct BufferedStringWriter {
     files: VecDeque<(u32, String)>,

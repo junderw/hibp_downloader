@@ -4,7 +4,7 @@ use indicatif::{ProgressState, ProgressStyle};
 use tracing::{error_span, Span};
 use tracing_indicatif::span_ext::IndicatifSpanExt;
 
-use crate::stats::{AVG_TIME_MS, CACHE_HITS, DOWNLOADED, IN_ROUTE};
+use super::stats::{AVG_TIME_MS, CACHE_HITS, DOWNLOADED, IN_ROUTE};
 
 pub fn get_span(length: u64, style: ProgressStyle) -> Span {
     // Use error so the progress bar is always shown

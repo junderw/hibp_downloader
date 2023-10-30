@@ -2,7 +2,7 @@ use std::{sync::atomic, time::Instant};
 
 use tracing::info;
 
-use crate::{
+use super::{
     consts::HIBP_ROOT,
     stats::{AVG_TIME_MS, CACHE_HITS, DOWNLOADED, IN_ROUTE},
 };
