@@ -54,7 +54,9 @@ pub fn run_download(config: &Config) -> anyhow::Result<()> {
         let _enter = span.enter();
         let (client, tx, rx) = init_client_channels(concurrent_requests);
         let progress_task = tokio::spawn(progress_task().instrument(span.clone()));
-        let writer_task = tokio::spawn(writer_task(rx, config.output_file.clone()));
+        let file =
+            buffered_string_writer::BufferedStringWriter::from_file(&config.output_path).await?;
+        let writer_task = tokio::spawn(writer_task(rx, file));
         let download_task =
             tokio::spawn(download_task(client, concurrent_requests, tx, config.ntlm));
 

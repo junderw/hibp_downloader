@@ -1,6 +1,5 @@
 use std::{
     io,
-    path::PathBuf,
     sync::{atomic, Arc},
     time::Duration,
 };
@@ -22,10 +21,8 @@ use super::{
 
 pub async fn writer_task(
     mut rx: Receiver<ChannelData>,
-    output_file: PathBuf,
+    mut file: BufferedStringWriter,
 ) -> Result<(), io::Error> {
-    let mut file = BufferedStringWriter::from_file(&output_file).await?;
-
     while let Some(rows) = rx.recv().await {
         file.add_file(rows).await?;
     }

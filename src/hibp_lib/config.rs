@@ -17,14 +17,18 @@ pub struct Config {
     /// Download NTLM hashes instead of SHA1 hashes
     #[arg(short, long)]
     pub ntlm: bool,
-    /// The file where the output will be written.
-    /// This file will be sorted by hash.
+    /// The file or folder where the output will be written.
+    /// Defaults to a single file that writes all hashes to one file.
+    /// If an existing directory is chosen, it will save the downloaded data
+    /// as-is to files name ${THISVAR}/00000 to ${THISVAR}/FFFFF.
+    /// This means each row in each file will be missing the first 5 characters.
+    /// When using a directory, it must be empty.
     #[arg(
         long,
         default_value = "./hibp_password_hashes.txt",
         verbatim_doc_comment
     )]
-    pub output_file: PathBuf,
+    pub output_path: PathBuf,
 }
 
 #[derive(Subcommand, Debug, Clone)]

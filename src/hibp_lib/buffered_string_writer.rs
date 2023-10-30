@@ -1,21 +1,40 @@
-use std::{collections::VecDeque, path::Path, sync::atomic};
+use std::{
+    collections::VecDeque,
+    path::{Path, PathBuf},
+    sync::atomic,
+};
 use tokio::io::AsyncWriteExt;
 
 use super::{stats::WRITTEN_TO_FILE, ChannelData};
 
 pub struct BufferedStringWriter {
     files: VecDeque<ChannelData>,
-    writer: tokio::io::BufWriter<tokio::fs::File>,
+    writer: Option<tokio::io::BufWriter<tokio::fs::File>>,
+    path: PathBuf,
 }
 
 impl BufferedStringWriter {
     pub async fn from_file(filename: &Path) -> Result<Self, std::io::Error> {
-        Ok(Self {
-            files: VecDeque::with_capacity(1024),
-            writer: tokio::io::BufWriter::with_capacity(
+        let metadata = tokio::fs::metadata(filename).await?;
+        let writer = if metadata.is_dir() {
+            let mut dir_contents = tokio::fs::read_dir(filename).await?;
+            if dir_contents.next_entry().await?.is_some() {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::Unsupported,
+                    "Directory downloads must be done with an empty directory.",
+                ));
+            }
+            None
+        } else {
+            Some(tokio::io::BufWriter::with_capacity(
                 1024 * 1024 * 32, // 1 download is around 32kB. This fits around 1024 downloads.
                 tokio::fs::File::create(filename).await?,
-            ),
+            ))
+        };
+        Ok(Self {
+            files: VecDeque::with_capacity(1024),
+            writer,
+            path: filename.to_path_buf(),
         })
     }
 
@@ -48,10 +67,16 @@ impl BufferedStringWriter {
                 }
             }
             let (n, text) = self.files.pop_front().unwrap();
-            for line in String::from_utf8_lossy(&text).lines() {
-                self.writer
-                    .write_all(format!("{n:05X}{line}\n").as_bytes())
-                    .await?;
+            if let Some(writer) = self.writer.as_mut() {
+                for line in String::from_utf8_lossy(&text).lines() {
+                    writer
+                        .write_all(format!("{n:05X}{line}\n").as_bytes())
+                        .await?;
+                }
+            } else {
+                let filepath = self.path.join(format!("{n:05X}"));
+                let mut file = tokio::fs::File::create(&filepath).await?;
+                file.write_all(&text).await?;
             }
             WRITTEN_TO_FILE.fetch_add(1, atomic::Ordering::AcqRel);
         }
@@ -60,6 +85,10 @@ impl BufferedStringWriter {
     }
 
     pub async fn inner_flush(&mut self) -> Result<(), std::io::Error> {
-        self.writer.flush().await
+        if let Some(w) = self.writer.as_mut() {
+            w.flush().await
+        } else {
+            Ok(())
+        }
     }
 }
