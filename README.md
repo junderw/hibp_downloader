@@ -44,8 +44,12 @@ Options:
       --workers <WORKERS>          The number of workers to use for requests [default: NUM_CPU]
       --multiplier <MULTIPLIER>    The number of requests per worker [default: 128/NUM_CPU]
   -n, --ntlm                       Download NTLM hashes instead of SHA1 hashes
-      --output-file <OUTPUT_FILE>  The file where the output will be written.
-                                   This file will be sorted by hash. [default: ./hibp_password_hashes.txt]
+      --output-path <OUTPUT_PATH>  The file or folder where the output will be written.
+                                   Defaults to a single file that writes all hashes to one file.
+                                   If an existing directory is chosen, it will save the downloaded data
+                                   as-is to files name ${THISVAR}/00000 to ${THISVAR}/FFFFF.
+                                   This means each row in each file will be missing the first 5 characters.
+                                   When using a directory, it must be empty. [default: ./hibp_password_hashes.txt]
   -h, --help                       Print help
   -V, --version                    Print version
 ```
