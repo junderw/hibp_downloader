@@ -15,8 +15,14 @@ pub struct BufferedStringWriter {
 
 impl BufferedStringWriter {
     pub async fn from_file(filename: &Path) -> Result<Self, std::io::Error> {
-        let metadata = tokio::fs::metadata(filename).await?;
-        let writer = if metadata.is_dir() {
+        let exists = tokio::fs::try_exists(filename).await?;
+        let is_dir = if exists {
+            let metadata = tokio::fs::metadata(filename).await?;
+            metadata.is_dir()
+        } else {
+            false
+        };
+        let writer = if exists && is_dir {
             let mut dir_contents = tokio::fs::read_dir(filename).await?;
             if dir_contents.next_entry().await?.is_some() {
                 return Err(std::io::Error::new(
@@ -49,6 +55,7 @@ impl BufferedStringWriter {
         Ok(())
     }
 
+    #[allow(clippy::get_first)]
     pub async fn flush(&mut self, only_contiguous: bool) -> Result<(), std::io::Error> {
         // Sort by the 5 character key at the beginning of the file
         // This matches the first 5 characters of the first row

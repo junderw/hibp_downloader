@@ -13,6 +13,7 @@ pub struct MyStruct {
     pub hash: String,
 }
 
+#[allow(clippy::non_canonical_partial_ord_impl)]
 impl PartialOrd for MyStruct {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         // reverse order (highest to lowest)
