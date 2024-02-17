@@ -43,7 +43,7 @@ pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<
 
     // This is a rough estimate.
     let span = get_span(rows_in_file * 2, progress_style_sort());
-    let _enter = span.enter();
+    let enter = span.enter();
 
     // 11.64 million x 45 bytes per struct = 500.5 MB chunks
     let sorter = ExternalSorter::new()
@@ -67,5 +67,13 @@ pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<
         });
     // Remove the temp dir after the writing is finished.
     std::fs::remove_dir_all(temp_dir)?;
+
+    // Leak the span so that it never gets cleaned up
+    // (We want it to remain after the program finishes so the logs aren't deleted)
+    // Give it a chance to write to stderr (since it can't flush in the Drop impl)
+    std::thread::sleep(std::time::Duration::from_millis(100));
+    core::mem::forget(enter);
+    core::mem::forget(span);
+
     Ok(())
 }
