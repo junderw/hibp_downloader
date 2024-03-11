@@ -22,5 +22,17 @@ reqwest = { version = "0.11.22", default-features = false, features = ["rustls-t
 tokio = { version = "1", features = ["fs", "io-util", "rt-multi-thread"] }
 tracing = "0.1.40"
 tracing-indicatif = "0.3.5"
-tracing-log = "0.1.4"
+tracing-log = "0.2"
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+
+# Used for GUI binary
+eframe = { version = "0.26", optional = true }
+
+[lib]
+name = "hibp_downloader"
+path = "src/hibp_lib/mod.rs"
+
+[[bin]]
+name = "hibp_downloader_gui"
+path = "src/bin/gui.rs"
+required-features = ["eframe"]

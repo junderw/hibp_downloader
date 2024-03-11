@@ -5,3 +5,5 @@ pub static WRITTEN_TO_FILE: AtomicU64 = AtomicU64::new(0);
 pub static IN_ROUTE: AtomicU64 = AtomicU64::new(0);
 pub static CACHE_HITS: AtomicU64 = AtomicU64::new(0);
 pub static AVG_TIME_MS: AtomicU64 = AtomicU64::new(0);
+pub static LENGTH_OF_SORT: AtomicU64 = AtomicU64::new(0);
+pub static PROGRESS_OF_SORT: AtomicU64 = AtomicU64::new(0);

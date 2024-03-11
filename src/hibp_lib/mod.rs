@@ -1,16 +1,15 @@
 mod buffered_string_writer;
 pub mod config;
-mod consts;
+pub mod consts;
 mod download;
 mod progress_style;
 mod sort;
-mod stats;
+pub mod stats;
 mod tasks;
 
-use std::sync::atomic;
+use std::{path::Path, sync::atomic};
 
 use bytes::Bytes;
-use config::Config;
 use consts::{LENGTH, USER_AGENT};
 use progress_style::{get_span, progress_style_download};
 use reqwest::Client;
@@ -49,18 +48,21 @@ pub fn init_client_channels(
 }
 
 pub use sort::run_sort;
-pub fn run_download(config: &Config) -> anyhow::Result<()> {
+pub fn run_download(
+    workers: usize,
+    multiplier: usize,
+    ntlm: bool,
+    output_path: &Path,
+) -> anyhow::Result<()> {
     let body = async move {
-        let concurrent_requests = config.workers * config.multiplier;
+        let concurrent_requests = workers * multiplier;
         let span = get_span(u64::from(LENGTH), progress_style_download());
         let enter = span.enter();
         let (client, tx, rx) = init_client_channels(concurrent_requests);
         let progress_task = tokio::spawn(progress_task().instrument(span.clone()));
-        let file =
-            buffered_string_writer::BufferedStringWriter::from_file(&config.output_path).await?;
+        let file = buffered_string_writer::BufferedStringWriter::from_file(output_path).await?;
         let writer_task = tokio::spawn(writer_task(rx, file));
-        let download_task =
-            tokio::spawn(download_task(client, concurrent_requests, tx, config.ntlm));
+        let download_task = tokio::spawn(download_task(client, concurrent_requests, tx, ntlm));
 
         download_task.await??;
         writer_task.await??;
@@ -82,7 +84,7 @@ pub fn run_download(config: &Config) -> anyhow::Result<()> {
     // in the program and will be cleaned up after the process exits anyways.
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
-        .worker_threads(config.workers)
+        .worker_threads(workers)
         .build()
         .unwrap();
     runtime.block_on(body)?;

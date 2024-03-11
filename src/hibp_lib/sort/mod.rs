@@ -8,6 +8,8 @@ use tracing_indicatif::span_ext::IndicatifSpanExt;
 mod row;
 use row::MyStruct;
 
+use crate::stats::{LENGTH_OF_SORT, PROGRESS_OF_SORT};
+
 use super::progress_style::{get_span, progress_style_sort};
 
 pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<()> {
@@ -42,6 +44,7 @@ pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<
     let rows_in_file = input_byte_size / row_size as u64;
 
     // This is a rough estimate.
+    LENGTH_OF_SORT.store(rows_in_file * 2, std::sync::atomic::Ordering::Release);
     let span = get_span(rows_in_file * 2, progress_style_sort());
     let enter = span.enter();
 
@@ -56,10 +59,12 @@ pub fn run_sort(input: &Path, output: &Path, temp_dir: &Path) -> anyhow::Result<
     sorter
         .sort(reader.lines().map(|s| {
             span.pb_inc(1);
+            PROGRESS_OF_SORT.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
             s.unwrap().parse::<MyStruct>().unwrap()
         }))?
         .for_each(|data| {
             span.pb_inc(1);
+            PROGRESS_OF_SORT.fetch_add(1, std::sync::atomic::Ordering::AcqRel);
             writer.write_all(data.hash.as_bytes()).unwrap();
             writer.write_all(b":").unwrap();
             writer.write_all(data.count.to_string().as_bytes()).unwrap();
